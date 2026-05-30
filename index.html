@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Birthday Video</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFD700;
+    --gold-light: #FFE966;
+    --gold-dark: #B8860B;
+    --gold-glow: rgba(255, 215, 0, 0.6);
+    --black: #000000;
+    --black-deep: #0a0800;
+    --black-card: #0f0d00;
+    --text: #fff8dc;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; min-height: 100vh;
+    background: var(--black-deep);
+    font-family: 'Cinzel', serif;
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── CANVAS BACKGROUND ── */
+  #bgCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ── PAGES ── */
+  #galleryPage, #playerPage {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+  }
+  #playerPage { display: none; }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 48px 20px 32px;
+  }
+
+  .title-wrap {
+    display: inline-block;
+    perspective: 600px;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(2rem, 8vw, 4.5rem);
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow:
+      0 0 10px var(--gold-glow),
+      0 0 30px var(--gold-glow),
+      0 0 60px rgba(255,215,0,0.3),
+      2px 4px 0px var(--gold-dark),
+      4px 8px 0px rgba(184,134,11,0.4);
+    letter-spacing: 0.04em;
+    animation: float3d 4s ease-in-out infinite, shimmer 3s ease-in-out infinite;
+    transform-style: preserve-3d;
+    display: inline-block;
+    line-height: 1.2;
+  }
+
+  @keyframes float3d {
+    0%,100% { transform: rotateX(0deg) rotateY(-3deg) translateY(0px); }
+    25%      { transform: rotateX(4deg) rotateY(3deg) translateY(-8px); }
+    50%      { transform: rotateX(0deg) rotateY(6deg) translateY(-4px); }
+    75%      { transform: rotateX(-4deg) rotateY(-3deg) translateY(-10px); }
+  }
+
+  @keyframes shimmer {
+    0%,100% { text-shadow: 0 0 10px var(--gold-glow), 0 0 30px var(--gold-glow), 0 0 60px rgba(255,215,0,0.3), 2px 4px 0px var(--gold-dark); }
+    50%      { text-shadow: 0 0 20px var(--gold-glow), 0 0 50px var(--gold-glow), 0 0 90px rgba(255,215,0,0.5), 2px 4px 0px var(--gold-dark); }
+  }
+
+  .subtitle {
+    margin-top: 10px;
+    font-size: clamp(0.75rem, 3vw, 1rem);
+    letter-spacing: 0.3em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    animation: fadeIn 2s ease forwards;
+    opacity: 0;
+    animation-delay: 0.5s;
+  }
+
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 60%; max-width: 400px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 36px;
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 20px;
+    padding: 0 16px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: linear-gradient(145deg, #1a1500, #0a0900);
+    border: 1px solid var(--gold-dark);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(255,215,0,0.08), inset 0 0 20px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: cardIn 0.6s ease backwards;
+  }
+  .card:active { transform: scale(0.97); }
+
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(30px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* stagger delay */
+  .card:nth-child(1)  { animation-delay: 0.05s; }
+  .card:nth-child(2)  { animation-delay: 0.10s; }
+  .card:nth-child(3)  { animation-delay: 0.15s; }
+  .card:nth-child(4)  { animation-delay: 0.20s; }
+  .card:nth-child(5)  { animation-delay: 0.25s; }
+  .card:nth-child(6)  { animation-delay: 0.30s; }
+  .card:nth-child(7)  { animation-delay: 0.35s; }
+  .card:nth-child(8)  { animation-delay: 0.40s; }
+  .card:nth-child(9)  { animation-delay: 0.45s; }
+  .card:nth-child(10) { animation-delay: 0.50s; }
+  .card:nth-child(11) { animation-delay: 0.55s; }
+  .card:nth-child(12) { animation-delay: 0.60s; }
+  .card:nth-child(13) { animation-delay: 0.65s; }
+  .card:nth-child(14) { animation-delay: 0.70s; }
+
+  .thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #1c1600 0%, #2a2000 50%, #0d0a00 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .thumb::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.07) 0%, transparent 70%);
+  }
+  .thumb-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 12px var(--gold-glow));
+    z-index: 1;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 12px var(--gold-glow)); }
+    50%      { transform: scale(1.1); filter: drop-shadow(0 0 22px var(--gold-glow)); }
+  }
+
+  .card-body { padding: 14px 14px 16px; }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 8px rgba(255,215,0,0.3);
+  }
+
+  .btn-row {
+    display: flex; gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 10px 6px;
+    border: none; border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    text-transform: uppercase;
+  }
+
+  .btn-open {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: #000;
+    box-shadow: 0 0 10px rgba(255,215,0,0.3);
+  }
+  .btn-open:active { background: linear-gradient(135deg, var(--gold), var(--gold-light)); box-shadow: 0 0 18px rgba(255,215,0,0.6); }
+
+  .btn-dl {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dark);
+    box-shadow: inset 0 0 8px rgba(255,215,0,0.05);
+  }
+  .btn-dl:active { background: rgba(255,215,0,0.1); box-shadow: 0 0 12px rgba(255,215,0,0.3); }
+
+  /* ── PLAYER PAGE ── */
+  #playerPage {
+    background: #000;
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+  }
+  #playerPage.active { display: flex; }
+
+  .player-header {
+    padding: 16px 16px 10px;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.95), transparent);
+    position: sticky; top: 0; z-index: 10;
+  }
+
+  .btn-back {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: #000;
+    border: none; border-radius: 50px;
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    min-height: 44px;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 0 14px rgba(255,215,0,0.4);
+    transition: all 0.2s;
+  }
+  .btn-back:active { box-shadow: 0 0 22px rgba(255,215,0,0.7); transform: scale(0.97); }
+
+  .player-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 8px var(--gold-glow);
+    flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .video-wrap {
+    width: 100%;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    flex: 1;
+    padding: 10px 0 20px;
+  }
+
+  #mainVideo {
+    width: 100%;
+    max-height: 80vh;
+    background: #000;
+    border-radius: 8px;
+    display: block;
+    outline: none;
+    /* Android inline play */
+    -webkit-playsinline: true;
+  }
+
+  .player-dl-wrap {
+    padding: 16px;
+    display: flex; justify-content: center;
+  }
+  .btn-dl-player {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: #000;
+    border: none; border-radius: 50px;
+    padding: 14px 36px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(255,215,0,0.4);
+    min-height: 50px;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-dl-player:active { box-shadow: 0 0 28px rgba(255,215,0,0.7); transform: scale(0.97); }
+
+  /* smooth page transitions */
+  .page-fade-in  { animation: pageFade 0.4s ease forwards; }
+  @keyframes pageFade { from { opacity:0; } to { opacity:1; } }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- ═══════════════ GALLERY PAGE ═══════════════ -->
+<div id="galleryPage">
+  <header>
+    <div class="title-wrap">
+      <h1>🎂 Birthday Video</h1>
+    </div>
+    <p class="subtitle">✦ Precious Memories ✦</p>
+  </header>
+  <div class="divider"></div>
+
+  <div class="grid" id="videoGrid"></div>
+</div>
+
+<!-- ═══════════════ PLAYER PAGE ═══════════════ -->
+<div id="playerPage">
+  <div class="player-header">
+    <button class="btn-back" onclick="goBack()">◀ Back</button>
+    <div class="player-title" id="playerTitle">Video</div>
+  </div>
+  <div class="video-wrap">
+    <video id="mainVideo"
+      controls
+      playsinline
+      webkit-playsinline
+      preload="metadata"
+      controlsList="nodownload">
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+  <div class="player-dl-wrap">
+    <button class="btn-dl-player" id="playerDlBtn">⬇ Download Video</button>
+  </div>
+</div>
+
+<script>
+// ─── VIDEO DATA ──────────────────────────────────────────────
+// INSTRUCTIONS: Replace "video1.mp4" ... "video13.mp4" with
+// your actual video file names or full paths/URLs.
+const videos = [
+  { title: "Birthday Video 1",  src: "document_6111631135270247180.mp4" },
+  { title: "Birthday Video 2",  src: "document_6111631135270247181.mp4" },
+  { title: "Birthday Video 3",  src: "document_6111631135270247183.mp4" },
+  { title: "Birthday Video 4",  src: "document_6111631135270247184.mp4" },
+  { title: "Birthday Video 5",  src: "document_6111631135270247187.mp4" },
+  { title: "Birthday Video 6",  src: "document_6111631135270247445.mp4" },
+  { title: "Birthday Video 7",  src: "document_6111631135270247466.mp4" },
+  { title: "Birthday Video 8",  src: "document_6111631135270247476.mp4" },
+  { title: "Birthday Video 9",  src: "document_6113882935083934408.mp4" },
+  { title: "Birthday Video 10", src: "document_6113882935083934412.mp4" },
+  { title: "Birthday Video 11", src: "document_6113882935083934415.mp4" },
+];
+
+// ─── BUILD CARDS ─────────────────────────────────────────────
+const grid = document.getElementById('videoGrid');
+videos.forEach((v, i) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="thumb">
+      <span class="thumb-icon">🎬</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">${v.title}</div>
+      <div class="btn-row">
+        <button class="btn btn-open" onclick="openVideo(${i})">▶ Open</button>
+        <button class="btn btn-dl"   onclick="downloadVideo(${i})">⬇ Save</button>
+      </div>
+    </div>`;
+  grid.appendChild(card);
+});
+
+// ─── OPEN / BACK ──────────────────────────────────────────────
+const galleryPage = document.getElementById('galleryPage');
+const playerPage  = document.getElementById('playerPage');
+const mainVideo   = document.getElementById('mainVideo');
+const playerTitle = document.getElementById('playerTitle');
+const playerDlBtn = document.getElementById('playerDlBtn');
+
+let currentIndex = 0;
+
+function openVideo(i) {
+  currentIndex = i;
+  const v = videos[i];
+  mainVideo.src = v.src;
+  mainVideo.load();
+  playerTitle.textContent = v.title;
+  playerDlBtn.onclick = () => downloadVideo(i);
+
+  galleryPage.style.display = 'none';
+  playerPage.style.display  = 'flex';
+  playerPage.classList.add('page-fade-in');
+  window.scrollTo(0, 0);
+
+  // Auto play on Android
+  mainVideo.play().catch(() => {});
+}
+
+function goBack() {
+  mainVideo.pause();
+  mainVideo.src = '';
+  playerPage.style.display  = 'none';
+  playerPage.classList.remove('page-fade-in');
+  galleryPage.style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// ─── DOWNLOAD ────────────────────────────────────────────────
+function downloadVideo(i) {
+  const v = videos[i];
+  const a = document.createElement('a');
+  a.href     = v.src;
+  a.download = v.title + '.mp4';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ─── GOLD PARTICLE BACKGROUND ────────────────────────────────
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const PARTICLE_COUNT = 120;
+const particles = [];
+
+function rand(a, b) { return a + Math.random() * (b - a); }
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push({
+    x:     rand(0, canvas.width),
+    y:     rand(0, canvas.height),
+    r:     rand(0.5, 2.5),
+    alpha: rand(0.1, 0.8),
+    vx:    rand(-0.2, 0.2),
+    vy:    rand(-0.4, -0.1),
+    flicker: rand(0, Math.PI * 2),
+    fspeed:  rand(0.01, 0.04),
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // deep vignette
+  const vg = ctx.createRadialGradient(
+    canvas.width/2, canvas.height/2, canvas.height * 0.1,
+    canvas.width/2, canvas.height/2, canvas.height * 0.9
+  );
+  vg.addColorStop(0, 'rgba(20,15,0,0)');
+  vg.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.flicker += p.fspeed;
+    const a = p.alpha * (0.6 + 0.4 * Math.sin(p.flicker));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 215, 0, ${a})`;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = `rgba(255, 215, 0, ${a * 0.8})`;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (p.y < -5)            p.y = canvas.height + 5;
+    if (p.x < -5)            p.x = canvas.width + 5;
+    if (p.x > canvas.width + 5) p.x = -5;
+  });
+
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+</body>
+</html>
